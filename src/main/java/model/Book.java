@@ -6,20 +6,23 @@ public class Book {
 	String Descript;
 	String author;
 	String publisher;
-	int categoryID;
+	double price;
+	Category cate;
 	
 	public Book() {
 		super();
 	}
 	
-	public Book(int productID, String productName, String descript, String author, String publisher, int categoryID) {
+	public Book( String productName, String descript, String author, String publisher, double price,
+			Category cate) {
 		super();
-		this.productID = productID;
+		
 		this.productName = productName;
-		this.Descript = descript;
+		Descript = descript;
 		this.author = author;
 		this.publisher = publisher;
-		this.categoryID = categoryID;
+		this.price = price;
+		this.cate = cate;
 	}
 
 	public int getProductID() {
@@ -52,18 +55,30 @@ public class Book {
 	public void setPublisher(String publisher) {
 		this.publisher = publisher;
 	}
-	public int getCategoryID() {
-		return categoryID;
+
+	public double getPrice() {
+		return price;
 	}
-	public void setCategoryID(int categoryID) {
-		this.categoryID = categoryID;
+
+	public void setPrice(double price) {
+		this.price = price;
 	}
-	
+
+	public Category getCate() {
+		return cate;
+	}
+
+	public void setCate(Category cate) {
+		this.cate = cate;
+	}
+
 	@Override
 	public String toString() {
-		return "book [productID=" + productID + ", productName=" + productName + ", Descript=" + Descript + ", author="
-				+ author + ", publisher=" + publisher + ", categoryID=" + categoryID + "]";
+		return "Book [productID=" + productID + ", productName=" + productName + ", Descript=" + Descript + ", author="
+				+ author + ", publisher=" + publisher + ", price=" + price + ", cate=" + cate + "]";
 	}
+	
+	
 	
 	
 }

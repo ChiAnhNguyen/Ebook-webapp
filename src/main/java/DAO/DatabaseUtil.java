@@ -23,8 +23,8 @@ public class DatabaseUtil {
 		return conn;
 		
 	}
-	public static void main(String[] args) throws SQLException {
-		DatabaseUtil conn =new DatabaseUtil();
-		conn.getConnection();
-	}
+//	public static void main(String[] args) throws SQLException {
+//		DatabaseUtil conn =new DatabaseUtil();
+//		conn.getConnection();
+//	}
 }
