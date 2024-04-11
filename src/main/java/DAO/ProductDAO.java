@@ -13,7 +13,7 @@ public interface ProductDAO {
     List<Map<String, Object>> getAllProducts() throws SQLException;
     
     // Thêm sản phẩm mới
-    void addProduct(Book book) throws SQLException;
+    void addProduct(Book book, int categoryID) throws SQLException;
     
     void addProductImage(BookImage image) ;
     
@@ -28,4 +28,5 @@ public interface ProductDAO {
     boolean deleteImage(int productID);
     
     int findCategory(Category category);
+    String findCategoryName(Category categoty) throws SQLException;
 }

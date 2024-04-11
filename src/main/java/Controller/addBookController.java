@@ -97,7 +97,8 @@ public class addBookController extends HttpServlet {
         try {
         	productDAO = new ProductDAOIpm(util);
         	categoryID= productDAO.findCategory(category);
-            productDAO.addProduct(book);
+        	System.out.println("CategoryID: "+categoryID);
+            productDAO.addProduct(book,categoryID);
             
             image = new BookImage(book.getProductID(),imageName,imageType,imagedata);
             productDAO.addProductImage(image);
@@ -107,7 +108,7 @@ public class addBookController extends HttpServlet {
         }
 
         // Redirect hoặc forward đến trang cần thiết
-        response.sendRedirect("./View/index.jsp");
+        response.sendRedirect("home");
     }
 
     private byte[] getImageData(Part imagePart) throws IOException {

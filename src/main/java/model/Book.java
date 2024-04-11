@@ -1,13 +1,13 @@
 package model;
 
 public class Book {
-	int productID;
-	String productName;
-	String Descript;
-	String author;
-	String publisher;
-	double price;
-	Category cate;
+	private int productID;
+	private String productName;
+	private String Descript;
+	private String author;
+	private String publisher;
+	private double price;
+	private Category cate;
 	
 	public Book() {
 		super();
@@ -24,7 +24,10 @@ public class Book {
 		this.price = price;
 		this.cate = cate;
 	}
-
+	
+	public int getCategoryID() {
+		return cate.getCategoryID();
+	}
 	public int getProductID() {
 		return productID;
 	}
@@ -65,6 +68,7 @@ public class Book {
 	}
 
 	public Category getCate() {
+		
 		return cate;
 	}
 

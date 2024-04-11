@@ -1,6 +1,9 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -40,34 +43,44 @@
         <table border="1">
             <tr>
                 <th>Product Name</th>
-                <th>Category Name</th>
+                <th>Category</th>
+                <th>Description</th>
                 <th>Price</th>
                 <th>Author</th>
                 <th>Publisher</th>
                 <th>Image</th>
                 <th>Action</th>
             </tr>
-            <c:forEach items="${productList}" var="product">
-                <tr>
-                    <td>${product.productName}</td>
-                    <td>${product.categoryName}</td>
-                    <td>${product.price}</td>
-                    <td>${product.author}</td>
-                    <td>${product.publisher}</td>
-                    <td><img src="${product.productImage}" alt="Product Image" width="100"></td>
-                    <td>
-                        <form action="editBookController" method="post">
-                            <input type="hidden" name="productId" value="${product.productID}">
-                            <input type="submit" value="Edit">
-                        </form>
-                        <form action="deleteBookController" method="post">
-                            <input type="hidden" name="productId" value="${product.productID}">
-                            <input type="submit" value="Delete">
-                        </form>
-                    </td>
-                </tr>
-            </c:forEach>
+            <c:forEach items="${productList}" var="productMap">
+    <c:set var="product" value="${productMap['product']}" />
+    <c:set var="imageData" value="${productMap['imageData']}" />
+    <c:set var="category" value="${productMap['category']}" />
+    
+   
+    <tr>
+        <td>${product.productName}</td>
+        <td>${category.categoryName}</td>
+        <td>${product.descript}</td>
+        <td>${product.price}</td>
+        <td>${product.author}</td>
+        <td>${product.publisher}</td>
+        <td><img src="data:image/jpeg;base64,${imageData}" alt="Product Image" width="100"></td>
+        <!-- Thêm các nút action để chỉnh sửa hoặc xóa sản phẩm -->
+        <!-- Thêm nút xóa -->
+    <td>
+        <form action="deleteproduct" method="post">
+            <input type="hidden" name="productId" value="${product.productID}">
+            <input type="submit" value="Delete" onclick="confirmDelete()">
+        </form>
+    </td>
+    </tr>
+</c:forEach>
         </table>
     </div>
 </body>
+<script>
+    function confirmDelete() {
+        return confirm("Are you sure you want to delete this product?");
+    }
+</script>
 </html>

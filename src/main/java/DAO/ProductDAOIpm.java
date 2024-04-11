@@ -10,6 +10,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.tomcat.util.codec.binary.Base64;
+
 import model.Book;
 import model.BookImage;
 import model.Category;
@@ -30,29 +32,35 @@ public class ProductDAOIpm implements ProductDAO{
 	@Override
 	public List<Map<String, Object>> getAllProducts() throws SQLException {
 		List<Map<String, Object>> productList = new ArrayList<>();
-        String query = "SELECT product.productID, product.productName, product.Descript, product.author, product.publisher, product.price, productimage.imageName, productimage.imageData "
-        		+ "FROM product INNER JOIN productImage ON product.productID = productimage.productID";
+        String query = "SELECT product.productID,product.categoryID, product.productName, product.Descript, product.author, product.publisher,categoryname, product.price,  productimage.imageData "
+        		+ "FROM product  INNER JOIN category ON product.categoryID = category.categoryID "
+        		+ "INNER JOIN productImage ON product.productID = productimage.productID ";
+        		
         try (PreparedStatement statement = connect.prepareStatement(query);
              ResultSet resultSet = statement.executeQuery()) {
             while (resultSet.next()) {
                 Map<String, Object> productMap = new HashMap<>();
                 Book product = new Book();
+                Category category = new Category();
+                category.setCategoryID(resultSet.getInt("categoryID"));
+                category.setCategoryName(resultSet.getString("categoryname")); 
                 product.setProductID(resultSet.getInt("productID"));
                 product.setProductName(resultSet.getString("productName"));
                 product.setDescript(resultSet.getString("Descript"));
                 product.setAuthor(resultSet.getString("author"));
                 product.setPublisher(resultSet.getString("publisher"));
+                
                 product.setPrice(resultSet.getDouble("price"));
-                // Lấy tên hình ảnh từ kết quả truy vấn
-                String imageName = resultSet.getString("imageName");
+                
                 // Lấy dữ liệu hình ảnh từ kết quả truy vấn
                 byte[] imageData = resultSet.getBytes("imageData");
+                String base64String = Base64.encodeBase64String(imageData);
                 // Tạo đường dẫn tới hình ảnh
-                String imagePath = "path/to/images/" + imageName; // Thay đổi đường dẫn tùy thuộc vào cách bạn lưu trữ hình ảnh
+               
                 // Thêm thông tin sản phẩm, đường dẫn hình ảnh và dữ liệu hình ảnh vào Map
                 productMap.put("product", product);
-                productMap.put("imagePath", imagePath);
-                productMap.put("imageData", imageData);
+                productMap.put("category", category);
+                productMap.put("imageData",base64String );
                 // Thêm Map này vào danh sách
                 productList.add(productMap);
             }
@@ -61,14 +69,15 @@ public class ProductDAOIpm implements ProductDAO{
 	}
 
 	@Override
-	public void addProduct(Book product) throws SQLException {
-		String query = "INSERT INTO product (productName, Descript, author, publisher, price) VALUES (?, ?, ?, ?, ?)";
+	public void addProduct(Book product, int categoryID) throws SQLException {
+		String query = "INSERT INTO product (productName, Descript, author, publisher,categoryID, price) VALUES (?, ?, ?, ?, ?, ?)";
         try (PreparedStatement statement = connect.prepareStatement(query,Statement.RETURN_GENERATED_KEYS)) {
             statement.setString(1, product.getProductName());
             statement.setString(2, product.getDescript());
             statement.setString(3, product.getAuthor());
             statement.setString(4, product.getPublisher());
-            statement.setDouble(5, product.getPrice());
+            statement.setInt(5, categoryID);
+            statement.setDouble(6, product.getPrice());
             int rowsInserted = statement.executeUpdate();
             if (rowsInserted == 0) {
                 throw new SQLException("Inserting product failed, no rows affected.");
@@ -113,12 +122,12 @@ String query = "UPDATE product SET productName = ?, Descript = ?, author = ?, pu
 
 	@Override
 	public boolean deleteProduct(int productId) throws SQLException {
-		String query = "DELETE product where productID =?";
+		String query = "DELETE FROM product where productID =?";
 		try (PreparedStatement statement = connect.prepareStatement(query)) {
 			statement.setInt(1, productId);
 			int rowUpdate = statement.executeUpdate();
-			statement.close();
-			connect.close();
+			
+			
 			return rowUpdate >0;
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -161,12 +170,12 @@ String query = "UPDATE product SET productName = ?, Descript = ?, author = ?, pu
 
 	@Override
 	public boolean deleteImage(int productID) {
-		String query = "DELETE productimage where productID =?";
+		String query = "DELETE FROM productimage where productID =?";
 		try (PreparedStatement statement = connect.prepareStatement(query)) {
 			statement.setInt(1, productID);
 			int rowUpdate = statement.executeUpdate();
-			statement.close();
-			connect.close();
+			
+			
 			return rowUpdate >0;
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -181,21 +190,37 @@ String query = "UPDATE product SET productName = ?, Descript = ?, author = ?, pu
 
 	@Override
 	public int findCategory(Category category) {
-		String query = "SELECT categoryID , categoryname From category WHERE categoryname = ? ";
-		int categoryId = 0;
-		try(PreparedStatement statement = connect.prepareStatement(query)){
-			ResultSet rs = statement.executeQuery();
-			statement.setString(1, category.getCategoryName());
-			while(rs.next()) {
-				category.setCategoryID(rs.getInt("categoryID"));
-				categoryId = category.getCategoryID();
-			}
-			
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return categoryId;
+		String query = "SELECT categoryID , categoryname FROM category WHERE categoryname = ? ";
+	    int categoryId = 0;
+	    try (PreparedStatement statement = connect.prepareStatement(query)) {
+	        statement.setString(1, category.getCategoryName());
+	        ResultSet rs = statement.executeQuery();
+	        while (rs.next()) {
+	            categoryId = rs.getInt("categoryID");
+	           
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	    return categoryId;
+	}
+
+
+	@Override
+	public String findCategoryName(Category category) throws SQLException {
+		String query = "SELECT  categoryname FROM category WHERE categoryID = ? ";
+		String categoryname ="";
+	    try (PreparedStatement statement = connect.prepareStatement(query)) {
+	        statement.setInt(1, category.getCategoryID());
+	        ResultSet rs = statement.executeQuery();
+	        while (rs.next()) {
+	            categoryname = rs.getString("categoryname");
+	           
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	    return categoryname;
 	}
 		
 	}
