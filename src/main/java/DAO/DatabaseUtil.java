@@ -13,7 +13,7 @@ public class DatabaseUtil {
 		try {
 			Class.forName("com.mysql.cj.jdbc.Driver");
 			conn = DriverManager.getConnection(url, user, pass);
-			System.out.println(conn);
+//			System.out.println(conn);
 			
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block

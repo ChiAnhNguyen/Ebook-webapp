@@ -42,8 +42,11 @@ public class ProductDAOIpm implements ProductDAO{
                 Map<String, Object> productMap = new HashMap<>();
                 Book product = new Book();
                 Category category = new Category();
-                category.setCategoryID(resultSet.getInt("categoryID"));
-                category.setCategoryName(resultSet.getString("categoryname")); 
+                if(resultSet.getString("categoryID") != null){
+                category.setCategoryID(resultSet.getInt("categoryID"));}
+                if (resultSet.getString("categoryname") != null) {
+                    category.setCategoryName(resultSet.getString("categoryname"));
+                }
                 product.setProductID(resultSet.getInt("productID"));
                 product.setProductName(resultSet.getString("productName"));
                 product.setDescript(resultSet.getString("Descript"));
@@ -98,7 +101,7 @@ public class ProductDAOIpm implements ProductDAO{
 	
 
 	@Override
-	public boolean updateProduct(Book product) throws SQLException {
+	public boolean updateProduct(Book product,int categoryID) throws SQLException {
 String query = "UPDATE product SET productName = ?, Descript = ?, author = ?, publisher = ?, price = ?, categoryID = ? WHERE productID = ?";
         
         try (PreparedStatement statement = connect.prepareStatement(query)) {
@@ -107,12 +110,11 @@ String query = "UPDATE product SET productName = ?, Descript = ?, author = ?, pu
             statement.setString(3, product.getAuthor());
             statement.setString(4, product.getPublisher());
             statement.setDouble(5, product.getPrice());
-            statement.setInt(6, product.getCate().getCategoryID());
+            statement.setInt(6, categoryID);
             statement.setInt(7, product.getProductID());
             
             int rowsUpdated = statement.executeUpdate();
-            statement.close();
-            connect.close();
+            
             return rowsUpdated > 0;
             
             
@@ -158,9 +160,9 @@ String query = "UPDATE product SET productName = ?, Descript = ?, author = ?, pu
             statement.setString(1, image.getImageName());
             statement.setString(2,image.getImageType());
             statement.setBytes(3, image.getImageData());
+            statement.setInt(4, productID);
             int rowupdated = statement.executeUpdate();
             statement.close();
-            connect.close();
             return rowupdated>0;
         } catch (SQLException e) {
 			e.printStackTrace();
@@ -182,10 +184,10 @@ String query = "UPDATE product SET productName = ?, Descript = ?, author = ?, pu
 		}
 		return false;
 	}
-	public static void main(String[] args) {
-		DatabaseUtil util = new DatabaseUtil();
-		ProductDAOIpm DAO = new ProductDAOIpm(util);
-	}
+//	public static void main(String[] args) {
+//		DatabaseUtil util = new DatabaseUtil();
+//		ProductDAOIpm DAO = new ProductDAOIpm(util);
+//	}
 
 
 	@Override
@@ -221,6 +223,47 @@ String query = "UPDATE product SET productName = ?, Descript = ?, author = ?, pu
 	        e.printStackTrace();
 	    }
 	    return categoryname;
+	}
+
+
+	@Override
+	public List<Map<String, Object>> getProductsByID(int productId) throws SQLException {
+		List<Map<String, Object>> productList = new ArrayList<>();
+		Map<String, Object> productMap = new HashMap<>();
+	    String query = "SELECT productName, product.categoryID, Descript, author, publisher, category.categoryName, price, productimage.imageData, product.productID " +
+	                   "FROM product " +
+	                   "INNER JOIN category ON product.categoryID = category.categoryID " +
+	                   "INNER JOIN productimage ON product.productID = productimage.productID " +
+	                   "WHERE product.productID = ?";
+
+	    try (PreparedStatement statement = connect.prepareStatement(query)) {
+	        statement.setInt(1, productId);
+	        try (ResultSet resultSet = statement.executeQuery()) {
+	            if (resultSet.next()) {
+	            	Book book = new Book();
+	            	Category category = new Category();
+	            	book.setProductName(resultSet.getString("productName"));
+	            	category.setCategoryID(resultSet.getInt("categoryID"));
+	            	book.setDescript(resultSet.getString("Descript"));
+	            	book.setAuthor(resultSet.getString("author"));
+	            	book.setPrice(resultSet.getDouble("price"));
+	            	book.setPublisher(resultSet.getString("publisher"));
+	            	category.setCategoryName(resultSet.getString("categoryName"));
+	              
+
+	                // Lấy dữ liệu hình ảnh từ kết quả truy vấn và encode sang base64
+	                byte[] imageData = resultSet.getBytes("imageData");
+	                book.setProductID(resultSet.getInt("productID"));
+	                String base64String = Base64.encodeBase64String(imageData);
+	                productMap.put("imageData", imageData);
+	                productMap.put("product",book);
+	                productMap.put("category", category);
+	                productList.add(productMap);
+	            }
+	        }
+	    }
+
+	    return productList;
 	}
 		
 	}

@@ -49,7 +49,7 @@
                 <th>Author</th>
                 <th>Publisher</th>
                 <th>Image</th>
-                <th>Action</th>
+                
             </tr>
             <c:forEach items="${productList}" var="productMap">
     <c:set var="product" value="${productMap['product']}" />
@@ -71,6 +71,13 @@
         <form action="deleteproduct" method="post">
             <input type="hidden" name="productId" value="${product.productID}">
             <input type="submit" value="Delete" onclick="confirmDelete()">
+           
+        </form>
+    </td>
+    <td>
+    	<form action="update-page" method="post">
+    	 	<input type="hidden" name="productIdToUpdate" value="${product.productID}">
+            <input type="submit" value="Update" href ="update-page">
         </form>
     </td>
     </tr>
@@ -82,5 +89,7 @@
     function confirmDelete() {
         return confirm("Are you sure you want to delete this product?");
     }
+   
+   
 </script>
 </html>

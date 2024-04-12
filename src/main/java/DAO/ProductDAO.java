@@ -10,7 +10,10 @@ import model.Category;
 
 public interface ProductDAO {
 	// Lấy danh sách sản phẩm
-    List<Map<String, Object>> getAllProducts() throws SQLException;
+   List<Map<String, Object>> getAllProducts() throws SQLException ;
+   
+   List<Map<String, Object>> getProductsByID(int productID) throws SQLException ;
+		
     
     // Thêm sản phẩm mới
     void addProduct(Book book, int categoryID) throws SQLException;
@@ -18,7 +21,7 @@ public interface ProductDAO {
     void addProductImage(BookImage image) ;
     
     // Sửa thông tin sản phẩm
-    boolean updateProduct(Book product) throws SQLException;
+    boolean updateProduct(Book product,int categoryID) throws SQLException;
     
     // Xóa sản phẩm
     boolean deleteProduct(int productId) throws SQLException;

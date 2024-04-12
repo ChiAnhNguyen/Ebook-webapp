@@ -25,9 +25,7 @@ public class Book {
 		this.cate = cate;
 	}
 	
-	public int getCategoryID() {
-		return cate.getCategoryID();
-	}
+	
 	public int getProductID() {
 		return productID;
 	}
