@@ -32,4 +32,5 @@ public interface ProductDAO {
     
     int findCategory(Category category);
     String findCategoryName(Category categoty) throws SQLException;
+    byte[] findImageByID(int ProductID) throws SQLException;
 }

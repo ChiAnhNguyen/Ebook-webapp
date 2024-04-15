@@ -41,7 +41,7 @@ public class indexController extends HttpServlet {
 		productDAO = new ProductDAOIpm(util);
 		try {
 			List<Map<String,Object>> productList = productDAO.getAllProducts();
-//			System.out.println("List of product: "+productList);
+			System.out.println("List of product: "+productList);
 			request.setAttribute("productList", productList);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block

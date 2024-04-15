@@ -1,11 +1,12 @@
 package model;
 
 public class BookImage {
-	int imageID;
-	int productID;
-	String imageName;
-	String imageType;
-	byte[] imageData;
+	private int imageID;
+	private int productID;
+	private String imageName;
+	private String imageType;
+	private byte[] imageData;
+	
 	public BookImage(int productID, String imageName, String imageType, byte[] imageData) {
 		super();
 		this.productID = productID;

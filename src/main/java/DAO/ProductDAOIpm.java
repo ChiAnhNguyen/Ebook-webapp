@@ -265,6 +265,25 @@ String query = "UPDATE product SET productName = ?, Descript = ?, author = ?, pu
 
 	    return productList;
 	}
+
+
+	@Override
+	public byte[] findImageByID(int ProductID) throws SQLException {
+		String query ="select imageData from productimage where productID = ? ";
+		byte[] imageData =  null;
+		try(PreparedStatement statement = connect.prepareStatement(query)){
+			statement.setInt(1, ProductID);
+			try(ResultSet rs = statement.executeQuery()){
+				if(rs.next()) {
+					imageData = rs.getBytes("imageData");
+					return imageData;
+				}
+			}
+		}catch(SQLException e) {
+			e.printStackTrace();
+		}
+		return imageData;
+	}
 		
 	}
 
