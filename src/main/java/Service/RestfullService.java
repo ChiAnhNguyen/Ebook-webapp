@@ -4,7 +4,9 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -16,6 +18,8 @@ import org.apache.tomcat.util.codec.binary.Base64;
 import DAO.DatabaseUtil;
 import DAO.ProductDAO;
 import DAO.ProductDAOIpm;
+import model.Order;
+import model.User;
 
 @Path("/products")
 public class RestfullService {
@@ -68,5 +72,37 @@ public class RestfullService {
         }
 	}
 	
+	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	public String insertUser(User user) {
+		util = new DatabaseUtil();
+		productDAO = new ProductDAOIpm(util);
+		int row =productDAO.insertUser(user);
+		if(row >0) {
+			return "thêm thành công";
+		}
+		return "thêm thất bại";
+		
+	}
+	@GET
+	@Path("/user/{username}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public User getUserByName(@PathParam("username") String name) {
+		util = new DatabaseUtil();
+		productDAO = new ProductDAOIpm(util);
+		User user = new User();
+		user= productDAO.findUserByname(name);
+		return user;
+	}
+	
+	@POST
+	@Path("/order")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public int addOrder(Order order) {
+		util = new DatabaseUtil();
+		productDAO = new ProductDAOIpm(util);
+		int rows = productDAO.addOrder(order);
+		return rows;
+	}
 	
 }

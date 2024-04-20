@@ -7,6 +7,8 @@ import java.util.Map;
 import model.Book;
 import model.BookImage;
 import model.Category;
+import model.Order;
+import model.User;
 
 public interface ProductDAO {
 	// Lấy danh sách sản phẩm
@@ -33,4 +35,8 @@ public interface ProductDAO {
     int findCategory(Category category);
     String findCategoryName(Category categoty) throws SQLException;
     byte[] findImageByID(int ProductID) throws SQLException;
+    public int insertUser(User user);
+    public User findUserByname(String name);
+    
+    public int addOrder(Order order);
 }

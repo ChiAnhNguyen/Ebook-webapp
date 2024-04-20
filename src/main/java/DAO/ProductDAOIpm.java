@@ -15,6 +15,8 @@ import org.apache.tomcat.util.codec.binary.Base64;
 import model.Book;
 import model.BookImage;
 import model.Category;
+import model.Order;
+import model.User;
 
 public class ProductDAOIpm implements ProductDAO{
 //	private DatabaseUtil connection;
@@ -283,6 +285,69 @@ String query = "UPDATE product SET productName = ?, Descript = ?, author = ?, pu
 			e.printStackTrace();
 		}
 		return imageData;
+	}
+
+
+	@Override
+	public int insertUser(User user) {
+		String query = "INSERT INTO custommer (custommerName,email,pass,phonenumb) VALUES(?,?,?,?)";
+		int rowUpdate = 0;
+		try(PreparedStatement statement = connect.prepareStatement(query)){
+			statement.setString(1, user.getCustomerName());
+			statement.setString(2, user.getEmail());
+			statement.setString(3, user.getCustommerpass());
+			statement.setString(4, user.getPhone());
+			rowUpdate = statement.executeUpdate();
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return rowUpdate;
+	}
+
+
+	@Override
+	public User findUserByname(String name) {
+		String query = "SELECT * FROM custommer WHERE custommerName = ?";
+		User user = new User();
+		try(PreparedStatement statement = connect.prepareStatement(query)){
+			statement.setString(1, name);
+			try(ResultSet rs = statement.executeQuery()){
+				if(rs.next()) {
+					user.setCustomerID(rs.getInt("custommerID"));
+					user.setCustomerName(rs.getString("custommerName"));
+					user.setEmail(rs.getString("email"));
+					user.setCustommerpass(rs.getString("pass"));
+					user.setPhone(rs.getString("phonenumb"));
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return user;
+	}
+
+
+	@Override
+	public int addOrder(Order order) {
+		// TODO Auto-generated method stub
+		String query = "INSERT INTO donhang (productID,custommerID,createDate,customerName,phonenumb,diachi) VALUES(?,?,NOW(),?,?,?)";
+		int rows_update=0;
+		try(PreparedStatement statement = connect.prepareStatement(query)){
+			statement.setInt(1, order.getProductID());
+			statement.setInt(2, order.getCustommerID());
+			statement.setString(3, order.getCustomerName());
+			statement.setString(4, order.getPhonenumb());
+			statement.setString(5, order.getDiachi());
+			rows_update= statement.executeUpdate();
+			return rows_update;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return rows_update;
+		
 	}
 		
 	}
